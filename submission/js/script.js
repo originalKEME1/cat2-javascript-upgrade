@@ -22,4 +22,60 @@ document.addEventListener('DOMContentLoaded', () => {
             servicesGrid.appendChild(card);
         });
     }
+
+    //FEATURE 2: DYNAMIC ADD/REMOVE CASE BUILDER
+    const caseInput = document.getElementById('case-item-input');
+    const caseAddBtn = document.getElementById('case-item-add-btn');
+    const caseItemsList = document.getElementById('case-items-list');
+
+    // Memory array to hold the state of custom selected items
+    let caseItems = [];
+
+    // Master function to sync the UI array state with the visible list elements
+    function renderCaseBuilder() {
+        if (!caseItemsList) return;
+        
+        // Reset old content to prevent duplicate renders
+        caseItemsList.innerHTML = '';
+
+        caseItems.forEach((itemText, index) => {
+            const li = document.createElement('li');
+            li.style.display = 'flex';
+            li.style.justifyContent = 'space-between';
+            li.style.alignItems = 'center';
+            li.style.padding = '12px 16px';
+            li.style.background = '#161616';
+            li.style.border = '1px solid #222';
+            li.style.fontSize = '0.9rem';
+
+            li.innerHTML = `
+                <span style="color: #eee; font-family: inherit;">• &nbsp; ${itemText}</span>
+                <button class="remove-case-btn" data-index="${index}" style="background: none; border: none; color: #ff4d4d; cursor: pointer; font-size: 0.8rem; font-family: inherit; letter-spacing: 0.5px; text-transform: uppercase; padding: 4px 8px;">[ Remove ]</button>
+            `;
+            caseItemsList.appendChild(li);
+        });
+    }
+
+    // Capture user input and push it into our state array
+    if (caseAddBtn && caseInput) {
+        caseAddBtn.addEventListener('click', () => {
+            const secureValue = caseInput.value.trim();
+            if (secureValue !== '') {
+                caseItems.push(secureValue);
+                caseInput.value = ''; // Clean input field
+                renderCaseBuilder();
+            }
+        });
+    }
+
+    // Intercept click actions inside the list container to track specific dynamic remove handles
+    if (caseItemsList) {
+        caseItemsList.addEventListener('click', (e) => {
+            if (e.target.classList.contains('remove-case-btn')) {
+                const indexTarget = e.target.getAttribute('data-index');
+                caseItems.splice(indexTarget, 1); // Slice selection cleanly from state array
+                renderCaseBuilder();
+            }
+        });
+    }
 });
