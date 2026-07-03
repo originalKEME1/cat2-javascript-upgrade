@@ -23,15 +23,15 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    //FEATURE 2: DYNAMIC ADD/REMOVE CASE BUILDER
+   //FEATURE 2 (modified) & 4: DYNAMIC ADD/REMOVE WITH LOCALSTORAGE PERSISTENCE
     const caseInput = document.getElementById('case-item-input');
     const caseAddBtn = document.getElementById('case-item-add-btn');
     const caseItemsList = document.getElementById('case-items-list');
 
-    // Memory array to hold the state of custom selected items
-    let caseItems = [];
+    // Load existing items from localStorage on startup, or fall back to an empty array
+    let caseItems = JSON.parse(localStorage.getItem('kemei_case_scope')) || [];
 
-    // Master function to sync the UI array state with the visible list elements
+    // Master function to sync the UI array state and save it to storage
     function renderCaseBuilder() {
         if (!caseItemsList) return;
         
@@ -54,7 +54,13 @@ document.addEventListener('DOMContentLoaded', () => {
             `;
             caseItemsList.appendChild(li);
         });
+
+        // Save current state array directly to localStorage cache
+        localStorage.setItem('kemei_case_scope', JSON.stringify(caseItems));
     }
+
+    // Initial load call to populate items when the client opens the page
+    renderCaseBuilder();
 
     // Capture user input and push it into our state array
     if (caseAddBtn && caseInput) {
